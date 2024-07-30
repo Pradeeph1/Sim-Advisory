@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/emp.css">
+    <title>Employee List</title>
+</head>
+<body>
+    <h1>Employee List</h1>
+    <div id="employee-list">
+        <!-- Employees will be displayed here -->
+    </div>
+    <div id="error-message" style="color: red;"></div>
+
+    <script>
+        function fetchEmployees() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'fetch_employees.php', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var employees = JSON.parse(xhr.responseText);
+                            displayEmployees(employees);
+                        } catch (e) {
+                            document.getElementById('error-message').innerText = "Failed to parse JSON response: " + e.message;
+                            console.error("Failed to parse JSON response:", e);
+                        }
+                    } else {
+                        document.getElementById('error-message').innerText = "Error fetching data from the server: " + xhr.statusText;
+                        console.error("Error fetching data from the server:", xhr.statusText);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function displayEmployees(employees) {
+            var employeeList = document.getElementById('employee-list');
+            employeeList.innerHTML = '';
+
+            employees.forEach(function(employee) {
+                var employeeDiv = document.createElement('div');
+                employeeDiv.className = 'employee';
+                employeeDiv.innerHTML = `
+                <div class="card_div">
+                    <img src="${employee.photo_path}" alt="${employee.name}" style="width:100px;height:100px;">
+                    <h2>${employee.name}</h2>
+                </div>    
+                    <p><strong>Position:</strong> ${employee.position}</p>
+                    <p><strong>Email:</strong> ${employee.email}</p>
+                     
+                `;
+                employeeList.appendChild(employeeDiv);
+            });
+        }
+
+        window.onload = fetchEmployees;
+    </script>
+</body>
+</html>
