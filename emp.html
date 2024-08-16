@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/emp.css">
+    <title>Employee 1 </title>
+</head>
+<body>
+    <h1>Employee List</h1>
+    <div id="employee-list">
+        <!-- Employees will be displayed here -->
+    </div>
+
+    <script>
+        // Function to fetch data from the server
+        function fetchEmployees() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'db_connect.php', true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var employees = JSON.parse(xhr.responseText);
+                    displayEmployees(employees);
+                }
+            };
+            xhr.send();
+        }
+
+        // Function to display the data in the HTML
+        function displayEmployees(employees) {
+            var employeeList = document.getElementById('employee-list');
+            employeeList.innerHTML = '';
+
+            employees.forEach(function(employee) {
+                var employeeDiv = document.createElement('div');
+                employeeDiv.className = 'employee';
+                employeeDiv.innerHTML = `
+                    <h2>${employee.name}</h2>
+                    <p><strong>Position:</strong> ${employee.position}</p>
+                    <p><strong>Email:</strong> ${employee.email}</p>
+                    <img src="img/${employee.photo_path}" alt="${employee.name}">
+                `;
+                employeeList.appendChild(employeeDiv);
+            });
+        }
+
+        // Fetch employees when the page loads
+        window.onload = fetchEmployees;
+    </script>
+</body>
+</html>
